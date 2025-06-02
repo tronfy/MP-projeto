@@ -5,10 +5,57 @@
 
 .equ UART_DATA, 0x1000
 .equ UART_CTRL, 0x1004
+.global LED_DATA
+.equ LED_DATA, 0x0
+.global SWITCH_DATA
+.equ SWITCH_DATA, 0x40
+.equ TIMER, 0x10002000
+
+.org 0x20
+# RTI
+    rdctl   et, ipending
+    beq     et, zero, OTHER_EXCEPTIONS
+    subi    ea, ea, 4       # hwint, subtrai 4 do ea
+
+    # TODO: certificar que eh int do timer
+    call    ANIM_UPDATE
+
+    # clear timeout bit
+    movia   r13, TIMER
+    stwio   r0, 0(r13)
+OTHER_INTERRUPTS:
+    br      END_HANDLER
+OTHER_EXCEPTIONS:
+END_HANDLER:
+    eret
 
 .global _start
 _start:
+    # definir contagem
+    # 10mi = 10011000 1001011010000000
+    movia   r13, TIMER
+    movia    r9, 0b1001011010000000 
+    stwio   r9, 0x8(r13)
+    movi    r9, 0b10011000
+    stwio   r9, 0xc(r13)
+
+    # inicializa o ponteiro de stack
+    movia   sp, 0x100000
+
+    # habilita PIE
+    movi    r8, 0b1
+    wrctl   status, r8
+
+    # habilita int timer
+    movi    r8, 0b1
+    wrctl   ienable, r8     
+
+    # configura int e inicia timer
+    movi    r10, 0b0111
+    stwio   r10, 4(r13)
+
     movia   r8, 0x10000000
+
 
     movia r16, MSG_START
     call EXIBIR_MSG                 # exibe mensagem de inicio
@@ -57,7 +104,7 @@ UART_ENVIA:
     stwio   r10, UART_DATA(r8)    
     br      UART_RECEBE
 
-#BACKSPACE:
+# BACKSPACE:
 ## decrementa o tamanho do buffer
 #    beq     r15, zero, UART_RECEBE  # se buffer vazio, volta para receber
 #    subi    r15, r15, 4             # decrementa o tamanho do buffer
@@ -138,13 +185,14 @@ END:
 
 #.global EXIBIR_MSG
 EXIBIR_MSG: # exibe a mensagem em r16
-#    addi    sp, sp, -20     # aloca espaco na pilha
-#    stw     ra, 20(sp)      # salva o endereco de retorno
-#    stw     fp, 16(sp)      # salva o frame pointer
+    addi    sp, sp, -16     # aloca espaco na pilha
+    stw     ra, 12(sp)      # salva o endereco de retorno
+    stw     fp, 8(sp)      # salva o frame pointer
 #    stw     r16, 12(sp)
 #    stw     r17, 8(sp)
 #    stw     r18, 4(sp)
 #    stw     r19, 0(sp)
+    addi fp, sp, 8
 PRINT_MSG_LOOP:
     ldb     r17, 0(r16)             # le um byte da string
     beq     r17, zero, FIM_MSG      # se zero, fim da string
@@ -157,8 +205,8 @@ WAIT_WSPACE_MSG:
     addi    r16, r16, 1             # próximo caractere
     br      PRINT_MSG_LOOP
 FIM_MSG:
-#    ldw     ra, 20(sp)      # restaura o endereco de retorno
-#    ldw     fp, 16(sp)      # restaura o frame pointer
+    ldw     ra, 12(sp)      # restaura o endereco de retorno
+    ldw     fp, 8(sp)      # restaura o frame pointer
 #    ldw     r16, 12(sp)
 #    ldw     r17, 8(sp)
 #    ldw     r18, 4(sp)
@@ -168,6 +216,7 @@ FIM_MSG:
 
 
 .org 0x500
+.global INPUT_BUF
 INPUT_BUF:
     .space 4
 MSG_START:
@@ -176,5 +225,11 @@ MSG_PROMPT:
     .asciz "> "
 MSG_COMANDO_DESCONHECIDO:
     .asciz "Comando desconhecido!\n"
+.global LED_STATUS
+LED_STATUS:
+    .space 17
 
+.global ANIM_ACTIVE
+ANIM_ACTIVE:
+    .byte 0
 .end
