@@ -3,18 +3,38 @@
 .global ANIM_UPDATE
 
 ANIM_START:
+    addi    sp, sp, -16
+    stw     ra, 12(sp)
+    stw     fp, 8(sp)
+
     movia r16, 0b1
     stwio r16, LED_DATA(r8)
     stw r16, ANIM_ACTIVE(r0)
+
+    ldw     ra, 12(sp)
+    ldw     fp, 8(sp)
+    addi    sp, sp, 16
     ret
 
 ANIM_STOP:
+    addi    sp, sp, -16
+    stw     ra, 12(sp)
+    stw     fp, 8(sp)
+
     stw r0, ANIM_ACTIVE(r0)
     ldw r16, LED_STATUS(r0)
     stwio r16, LED_DATA(r8)
+
+    ldw     ra, 12(sp)
+    ldw     fp, 8(sp)
+    addi    sp, sp, 16
     ret
 
 ANIM_UPDATE:
+    addi    sp, sp, -16
+    stw     ra, 12(sp)
+    stw     fp, 8(sp)
+
     # se ANIM_ACTIVE for 0, não faz nada
     ldw r16, ANIM_ACTIVE(r0)
     beq r16, r0, ANIM_END
@@ -46,4 +66,7 @@ ANIM_CONTINUE:
     # TODO: baseado no switch
     stwio r16, LED_DATA(r8)
 ANIM_END:
+    ldw     ra, 12(sp)
+    ldw     fp, 8(sp)
+    addi    sp, sp, 16
     ret

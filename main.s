@@ -4,12 +4,21 @@
 # r15 - tamanho do buffer
 
 .equ UART_DATA, 0x1000
+
 .equ UART_CTRL, 0x1004
+
 .global LED_DATA
 .equ LED_DATA, 0x0
+
 .global SWITCH_DATA
 .equ SWITCH_DATA, 0x40
+
 .equ TIMER, 0x10002000
+
+.global DISPLAY_DATA
+.equ DISPLAY_DATA, 0x10000020
+
+.equ BUTTON_BORDER, 0x5c
 
 .org 0x20
 # RTI
@@ -18,11 +27,21 @@
     subi    ea, ea, 4       # hwint, subtrai 4 do ea
 
     # TODO: certificar que eh int do timer
-    call    ANIM_UPDATE
-
     # clear timeout bit
     movia   r13, TIMER
     stwio   r0, 0(r13)
+
+    call    ANIM_UPDATE
+
+    # se CRON_INT_COUNT for 5 (1s), chama CRON_UPDATE
+    ldb     r13, CRON_INT_COUNT(r0)
+    movi    r14, 5
+    bne     r13, r14, CRON_INT_CONTINUE
+    mov     r13, r0
+    call    CRON_UPDATE
+CRON_INT_CONTINUE:
+    addi    r13, r13, 1
+    stb     r13, CRON_INT_COUNT(r0)
 OTHER_INTERRUPTS:
     br      END_HANDLER
 OTHER_EXCEPTIONS:
@@ -55,7 +74,6 @@ _start:
     stwio   r10, 4(r13)
 
     movia   r8, 0x10000000
-
 
     movia r16, MSG_START
     call EXIBIR_MSG                 # exibe mensagem de inicio
@@ -216,15 +234,20 @@ FIM_MSG:
 
 
 .org 0x500
+
 .global INPUT_BUF
 INPUT_BUF:
     .space 4
+
 MSG_START:
     .asciz "Entre com o comando:\n"
+
 MSG_PROMPT:
     .asciz "> "
+
 MSG_COMANDO_DESCONHECIDO:
     .asciz "Comando desconhecido!\n"
+
 .global LED_STATUS
 LED_STATUS:
     .space 17
@@ -232,4 +255,24 @@ LED_STATUS:
 .global ANIM_ACTIVE
 ANIM_ACTIVE:
     .byte 0
+
+.global CRON_ACTIVE
+CRON_ACTIVE:
+    .byte 0
+
+.global CRON_PAUSED
+CRON_PAUSED:
+    .byte 0
+
+.global CRON_COUNTER
+CRON_COUNTER:
+    .word 0
+
+CRON_INT_COUNT:
+    .byte 0
+
+.global TABELA_7SEG
+TABELA_7SEG:
+    .byte 0b111111, 0b110,  0b1011011, 0b1001111, 0b1100110, 0b1101101, 0b1111101, 0b111, 0b1111111, 0b1100111, 0b1110111, 0b1111100, 0b1011000, 0b1011110, 0b1111001, 0b1110001
+
 .end
