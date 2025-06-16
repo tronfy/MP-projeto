@@ -1,6 +1,7 @@
 .global CRON_START
 .global CRON_STOP
 .global CRON_UPDATE
+.global CRON_PAUSE_RESUME
 
 CRON_START:
     addi    sp, sp, -16

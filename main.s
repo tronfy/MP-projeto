@@ -18,6 +18,8 @@
 .global DISPLAY_DATA
 .equ DISPLAY_DATA, 0x10000020
 
+.equ KEY_INTMASK, 0x10000050
+
 .equ BUTTON_BORDER, 0x5c
 
 .org 0x20
@@ -26,7 +28,11 @@
     beq     et, zero, OTHER_EXCEPTIONS
     subi    ea, ea, 4       # hwint, subtrai 4 do ea
 
-    # TODO: certificar que eh int do timer
+    andi    r13, et, 2      # verifica se int do pushbutton
+    beq     r13, zero, OTHER_INTERRUPTS
+    call    EXT_PUSHBUTTON
+
+OTHER_INTERRUPTS:
     # clear timeout bit
     movia   r13, TIMER
     stwio   r0, 0(r13)
@@ -42,11 +48,28 @@
 CRON_INT_CONTINUE:
     addi    r13, r13, 1
     stb     r13, CRON_INT_COUNT(r0)
-OTHER_INTERRUPTS:
-    br      END_HANDLER
 OTHER_EXCEPTIONS:
 END_HANDLER:
     eret
+
+# tratar int pushbutton
+EXT_PUSHBUTTON:
+    addi    sp, sp, -16     # aloca espaco na pilha
+    stw     ra, 12(sp)      # salva o endereco de retorno
+    stw     fp, 8(sp)      # salva o frame pointer
+
+    movia   r9, KEY_INTMASK
+    ldwio   r12, 0xc(r9)
+    stwio   zero, 0xc(r9)   # reset edgecapture
+    andi    r13, r12, 0b10
+    beq     r13, zero, END_PUSHBUTTON
+EXT_KEY1:
+    call CRON_PAUSE_RESUME
+END_PUSHBUTTON:
+    ldw     ra, 12(sp)      # restaura o endereco de retorno
+    ldw     fp, 8(sp)      # restaura o frame pointer
+    addi    sp, sp, 16              # desaloca espaco na pilha
+    ret
 
 .global _start
 _start:
@@ -65,9 +88,14 @@ _start:
     movi    r8, 0b1
     wrctl   status, r8
 
-    # habilita int timer
-    movi    r8, 0b1
-    wrctl   ienable, r8     
+    # habilita int pushbutton 0b10, e timer 0b1
+    movi    r8, 0b11
+    wrctl   ienable, r8
+
+    # configura int KEY1
+    movi    r8, 0b10        # key1
+    movia   r9, KEY_INTMASK  # endereço intmask pushbutton
+    stwio   r8, 8(r9)       # habilita int key1
 
     # configura int e inicia timer
     movi    r10, 0b0111
