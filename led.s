@@ -51,7 +51,7 @@ LED_APAGA:
     ldw     r17, INPUT_BUF(r18)
     add     r16, r16, r17
 
-    movia   r17, 0xfffffffe
+    movia   r17, 0xfffffffe  # todos 1, menos o LED a apagar
     rol     r17, r17, r16
 
     ldw     r16, LED_STATUS(r0)

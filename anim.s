@@ -21,9 +21,9 @@ ANIM_STOP:
     stw     ra, 12(sp)
     stw     fp, 8(sp)
 
-    stb         r0, ANIM_ACTIVE(r0)
-    ldw         r16, LED_STATUS(r0)
-    stwio       r16, LED_DATA(r8)
+    stb     r0, ANIM_ACTIVE(r0)
+    ldw     r16, LED_STATUS(r0)
+    stwio   r16, LED_DATA(r8)
 
     ldw     ra, 12(sp)
     ldw     fp, 8(sp)

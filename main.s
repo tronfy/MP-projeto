@@ -214,7 +214,6 @@ END:
     br      END
 
 
-#.global EXIBIR_MSG
 EXIBIR_MSG:                 # exibe a mensagem em r16
     addi    sp, sp, -16     # aloca espaco na pilha
     stw     ra, 12(sp)      # salva o endereco de retorno
