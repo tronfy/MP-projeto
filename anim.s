@@ -36,7 +36,7 @@ ANIM_UPDATE:
     stw     fp, 8(sp)
 
     # se ANIM_ACTIVE for 0, não faz nada
-    ldw r16, ANIM_ACTIVE(r0)
+    ldb r16, ANIM_ACTIVE(r0)
     beq r16, r0, ANIM_END
 
     # ler status dos LEDs
