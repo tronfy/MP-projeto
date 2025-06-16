@@ -9,7 +9,7 @@ ANIM_START:
 
     movia r16, 0b1
     stwio r16, LED_DATA(r8)
-    stw r16, ANIM_ACTIVE(r0)
+    stb r16, ANIM_ACTIVE(r0)
 
     ldw     ra, 12(sp)
     ldw     fp, 8(sp)
@@ -21,7 +21,7 @@ ANIM_STOP:
     stw     ra, 12(sp)
     stw     fp, 8(sp)
 
-    stw r0, ANIM_ACTIVE(r0)
+    stb r0, ANIM_ACTIVE(r0)
     ldw r16, LED_STATUS(r0)
     stwio r16, LED_DATA(r8)
 

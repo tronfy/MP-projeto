@@ -264,9 +264,21 @@ CRON_ACTIVE:
 CRON_PAUSED:
     .byte 0
 
-.global CRON_COUNTER
-CRON_COUNTER:
-    .word 0
+.global CRON_COUNTER_UNI
+CRON_COUNTER_UNI:
+    .byte 0
+
+.global CRON_COUNTER_DEZ
+CRON_COUNTER_DEZ:
+    .byte 0
+
+.global CRON_COUNTER_CEN
+CRON_COUNTER_CEN:
+    .byte 0
+
+.global CRON_COUNTER_MIL
+CRON_COUNTER_MIL:
+    .byte 0
 
 CRON_INT_COUNT:
     .byte 0
