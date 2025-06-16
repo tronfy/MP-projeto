@@ -71,8 +71,14 @@
 - formatação do código, adição de comentários
 - relatório
 
+## Dificuldades
+
+- comportamento inesperado antes de implementar stack frames
+- comportamento inesperado por mal uso de `stw` no lugar de `stb`
+- bugs por mal uso de _shift_ no lugar de _roll_ (máscaras de LEDs)
+
 ## Considerações Finais
 
-- O material de apoio fornecido foi suficiente para o desenvolvimento dos laboratórios e projeto final.
-- Apreciamos o fato de que a modularização de conceitos nos laboratórios facilitou a elaboração do trabalho final.
-- O professor sempre foi muito solícito em responder dúvidas e orientar o desenvolvimento.
+- o material de apoio fornecido foi suficiente para o desenvolvimento dos laboratórios e projeto final.
+- apreciamos o fato de que a modularização de conceitos nos laboratórios facilitou a elaboração do trabalho final.
+- o professor sempre foi muito solícito em responder dúvidas e orientar o desenvolvimento.
