@@ -1,7 +1,5 @@
 # Projeto Final de Microprocessadores
 
-[TODO: introdução]
-
 ## Cronograma
 
 | data  | atividade |
