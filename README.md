@@ -1,5 +1,10 @@
 # Projeto Final de Microprocessadores
 
+## Integrantes
+- Filipi Peruca de Melo Pereira
+- Lucas Mateus Gonçalves de Góes
+- Nícolas Denadai Schmidt
+
 ## Cronograma
 
 | data  | atividade |
