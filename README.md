@@ -36,7 +36,7 @@
 - utiliza `roli 1` (esquerda) ou `roli 31` (direita), dependendo do estado de `SW0`
 
 ### `cron.s`
-- usa temporizador para animar o 
+- usa temporizador para animar o cronômetro
 - mantém 4 contadores decimais (unidade, dezena, ...)
 - responde a comando de pause/resume
 - usa tabela de conversão
